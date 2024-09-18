@@ -9,6 +9,9 @@ router.post('/', ktpControllers.createKTPRecord)
 // Get All KTP
 router.get('/',ktpControllers.getAllKTPRecord)
 
+// Get KTP BY ktpId
+router.get('/:idKtp',ktpControllers.getKTPRecordByKtpId)
+
 // Update KTP Record
 router.patch('/:idKtp', ktpControllers.updateKTPById)
 

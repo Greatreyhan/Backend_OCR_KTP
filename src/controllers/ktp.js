@@ -35,6 +35,25 @@ const getAllKTPRecord = async (req,res) =>{
     }
 }
 
+
+// Get All KTP Record
+const getKTPRecordByKtpId = async (req,res) =>{
+    const {idKtp} = req.params
+    try{
+        const [rows,field] = await ktpModel.getKTPRecordByKtpId(idKtp)
+        res.status(200).json({
+            message: 'get All KTP Record Success',
+            data: rows
+        })
+    }
+    catch(error){
+        res.status(500).json({
+            message: 'Server Error',
+            serverMessage: error
+        })
+    }
+}
+
 // Update KTP Record
 const updateKTPById = async (req,res) =>{
     const {idKtp} = req.params
@@ -78,5 +97,6 @@ module.exports = {
     createKTPRecord, 
     getAllKTPRecord,
     updateKTPById,
-    deleteKTPRecordById
+    deleteKTPRecordById,
+    getKTPRecordByKtpId
 }
