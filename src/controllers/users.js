@@ -2,7 +2,7 @@ const usersModel = require('../models/users')
 const getAllUsers = async (req,res) =>{
     try{
         const [rows,field] = await usersModel.getAllUsers()
-        res.json({
+        res.status(200).json({
             message: 'get All Users Success',
             data: rows
         })
@@ -16,30 +16,59 @@ const getAllUsers = async (req,res) =>{
 }
 
 // Create New Koordinator
-const createNewUser = (req,res) =>{
-    console.log(req.body)
-    res.json({
-        message: 'create new User Success',
-        data: req.body
-    })
+const createNewUser = async (req,res) =>{
+    const {body} = req
+    try{
+        await usersModel.createNewUser(body);
+        res.status(201).json({
+            message: 'create new user success',
+        })
+    }
+    catch(error){
+        res.status(500).json({
+            message: 'Server Error',
+            serverMessage: error
+        })
+    }
+    
 }
 
-const updateUser = (req,res) =>{
-    const {idUser} = req.params;
-    console.log(idUser)
-    res.json({
-        message: 'Berhasil update user',
-        data : idUser
-    })
+const updateUser = async (req,res) =>{
+    const {idUser} = req.params
+    const {body} = req
+    try{
+        await usersModel.updateUserById(body,idUser);
+        res.status(200).json({
+            message: 'update user success',
+            data:{
+                id:idUser,
+                ...body
+            }
+        })
+    }
+    catch(error){
+        res.status(500).json({
+            message: 'Server Error',
+            serverMessage: error
+        })
+    }
 }
 
-const deleteUser = (req,res) =>{
+const deleteUser = async (req,res) =>{
     const {idUser} = req.params;
-    console.log(idUser)
-    res.json({
-        message: 'Berhasil menghapus User',
-        data: idUser
-    })
+    try{
+        await usersModel.deleteUserById(idUser);
+        res.status(200).json({
+            message: 'delete user success',
+            data:null
+        })
+    }
+    catch(error){
+        res.status(500).json({
+            message: 'Server Error',
+            serverMessage: error
+        })
+    }
 }
 
 module.exports = {
