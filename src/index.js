@@ -4,16 +4,14 @@ const express = require('express')
 const cors = require('cors') // Import cors package
 const usersRoutes = require('./routes/users.js')
 const ktpRoutes = require('./routes/ktp.js')
-const logMiddlewares = require('./middlewares/logReq.js')
-const upload = require('./middlewares/multer.js')
-const port = process.env.PORT || 5000 
+const port = process.env.PORT || 5000
 
 const app = express()
 
 // Use CORS middleware to allow all origins
 app.use(cors())
 
-app.listen(port,()=>{
+app.listen(port, () => {
     console.log('server berhasil berjalan di Port ' + port)
 })
 
@@ -22,12 +20,6 @@ app.use('/assets', express.static('public'))
 
 app.use('/users', usersRoutes)
 app.use('/ktp', ktpRoutes)
-
-app.post('/upload', upload.single('photo'), (req, res) => {
-    res.json({
-        message: 'Upload Berhasil'
-    })
-})
 
 app.use((err, req, res, next) => {
     res.json({

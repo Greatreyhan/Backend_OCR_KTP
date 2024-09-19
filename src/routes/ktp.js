@@ -1,5 +1,6 @@
 const express = require('express')
 const ktpControllers = require('../controllers/ktp.js')
+const upload = require('../middlewares/multer.js')
 
 const router = express.Router();
 
@@ -17,5 +18,8 @@ router.patch('/:idKtp', ktpControllers.updateKTPById)
 
 // Delete KTP Record
 router.delete('/:idKtp', ktpControllers.deleteKTPRecordById)
+
+// Extract KTP Photo
+router.post('/extract', upload.single('ktp'), ktpControllers.extractKTPPhoto)
 
 module.exports = router

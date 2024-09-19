@@ -1,5 +1,9 @@
 const ktpModel = require('../models/ktp')
-
+const Tesseract = require('tesseract.js');
+const sharp = require('sharp');
+const path = require('path');
+const fs = require('fs');
+const extractor = require('../utils/extractKTP.js')
 // Create New Koordinator
 const createKTPRecord = async (req,res) =>{
     const {body} = req
@@ -93,10 +97,49 @@ const deleteKTPRecordById = async (req,res) =>{
     }
 }
 
+const extractKTPPhoto = async (req, res) => {
+    const imagePath = req.file.path;
+    const processedImagePath = `./uploads/processed_${req.file.filename}`;
+
+    // Resize dan konversi gambar ke grayscale menggunakan sharp
+    sharp(imagePath)
+        .resize({ width: 800 })
+        .greyscale()
+        .toFile(processedImagePath)
+        .then(() => {
+            // Jalankan OCR menggunakan Tesseract
+            Tesseract.recognize(processedImagePath, 'ind', {
+                logger: info => {
+                    // console.log(info)
+                } // Info proses OCR
+            })
+                .then(result => {
+                    // Hapus gambar yang sudah diproses
+                    fs.unlinkSync(imagePath);
+                    fs.unlinkSync(processedImagePath);
+
+                    // Ekstrak data dari teks hasil OCR
+                    const { data, cleanedText } = extractor.extractKTPData(result.data.text);
+
+                    // Kirim data ke klien
+                    res.json({ message: 'Extract data Success',data });
+                })
+                .catch(error => {
+                    // Tangani kesalahan OCR
+                    res.status(500).json({ message: 'Error during OCR process.', error: error.message });
+                });
+        })
+        .catch(error => {
+            // Tangani kesalahan saat memproses gambar
+            res.status(500).json({ message: 'Error processing image.', error: error.message });
+        });
+}
+
 module.exports = {
     createKTPRecord, 
     getAllKTPRecord,
     updateKTPById,
     deleteKTPRecordById,
-    getKTPRecordByKtpId
+    getKTPRecordByKtpId,
+    extractKTPPhoto
 }
